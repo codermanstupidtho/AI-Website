@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chatbot with Voice</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .chat-container {
+            max-width: 500px;
+            margin: auto;
+        }
+        .chat-box {
+            background-color: #f4f4f9;
+            padding: 20px;
+            border-radius: 10px;
+            height: 400px;
+            overflow-y: auto;
+        }
+        .chat-box div {
+            margin: 5px 0;
+        }
+        .user-message {
+            text-align: right;
+            color: #007bff;
+        }
+        .ai-message {
+            text-align: left;
+            color: #333;
+        }
+        .input-container {
+            display: flex;
+            margin-top: 10px;
+        }
+        input {
+            flex: 1;
+            padding: 10px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-box" id="chatBox">
+            <!-- Messages will appear here -->
+        </div>
+        <div class="input-container">
+            <input type="text" id="userInput" placeholder="Type a message...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        // Function to send message to the backend
+        function sendMessage() {
+            const message = document.getElementById('userInput').value;
+            if (message.trim() === "") return;
+
+            const chatBox = document.getElementById('chatBox');
+            chatBox.innerHTML += `<div class="user-message">${message}</div>`;
+            document.getElementById('userInput').value = '';
+
+            fetch('http://127.0.0.1:5000/chat', { // Replace with your deployed server URL
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const aiReply = data.reply;
+                chatBox.innerHTML += `<div class="ai-message">${aiReply}</div>`;
+                chatBox.scrollTop = chatBox.scrollHeight; // Scroll to latest message
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        }
+    </script>
+</body>
+</html>
